@@ -1,0 +1,492 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package view;
+
+import data.Payment;
+import data.Phases;
+import data.Role;
+import data.Tools;
+import db.DBInitData;
+import java.util.Vector;
+import javax.swing.JOptionPane;
+
+/**
+ *
+ * @author tanzil
+ */
+public class SearchSales extends javax.swing.JDialog {
+
+    /**
+     * Creates new form SearchSales
+     */
+    public SearchSales(java.awt.Frame parent, boolean modal) {
+        super(parent, modal);
+        initComponents();
+        Tools.LookAndFeel();
+        this.setLocationRelativeTo(null);
+        DBInitData.initRole(cbbRole);
+        DBInitData.initPay(cbbPay);
+
+    }
+
+    public void ResetOrder() {
+        txtCusName.setText("");
+        cbbPay.setSelectedIndex(0);
+        txtCarName.setText("");
+        cbbStatus.setSelectedIndex(0);
+        txtCusName.requestFocus();
+    }
+
+    public void ResetReceipt() {
+        txtSupName.setText("");
+        txtCar.setText("");
+        cbbRole.setSelectedIndex(0);
+        txtSupName.requestFocus();
+    }
+
+    public void SearchOrder() {
+        Payment p = (Payment) cbbPay.getSelectedItem();
+        String sq = "SELECT SaleInvoice.IDSale, Customer.Fullname, Car.CarName, UserSystem.Fullname, "
+                + "PayType.PayName, CONVERT(Nvarchar, SaleInvoice.SaleDate, 103) AS [SALES DATE], "
+                + "SaleInvoice.SellPrice, SaleInvoice.Installment, CONVERT(Nvarchar, SaleInvoice.LastDate, 103) AS [LAST DATE], "
+                + "CASE SaleInvoice.Status WHEN 1 THEN 'FINISH' ELSE 'NOT FINISH' END AS Status, SaleInvoice.Pay1, "
+                + "CONVERT(Nvarchar, SaleInvoice.Date1, 103) AS [1st DATE], SaleInvoice.Pay2, CONVERT(Nvarchar, SaleInvoice.Date2, 103) AS [2nd DATE], "
+                + "SaleInvoice.Pay3, CONVERT(Nvarchar, SaleInvoice.Date3, 103) AS [3rd DATE], SaleInvoice.Pay4, CONVERT(Nvarchar, SaleInvoice.Date4, 103) AS [4th DATE], "
+                + "SaleInvoice.Pay5, CONVERT(Nvarchar, SaleInvoice.Date5, 103) AS [5th DATE], SaleInvoice.Pay6, CONVERT(Nvarchar, SaleInvoice.Date6, 103) AS [6th DATE] "
+                + "FROM  UserSystem INNER JOIN SaleInvoice ON UserSystem.IDUser = SaleInvoice.IDUser "
+                + "INNER JOIN Car ON SaleInvoice.IDCar = Car.IDCar "
+                + "INNER JOIN PayType ON SaleInvoice.IDPay = PayType.IDPay "
+                + "INNER JOIN Customer ON SaleInvoice.IDCus = Customer.IDCus "
+                + "WHERE 1 = 1 ";
+        String s1s = sq;
+        if (!txtCusName.getText().equals("")) {
+            sq += " and Customer.Fullname like '%" + txtCusName.getText() + "%'";
+        }
+        if (!txtCarName.getText().equals("")) {
+            sq += " and Car.CarName like '%" + txtCarName.getText() + "%'";
+        }
+        if (cbbStatus.getSelectedIndex() != 0) {
+            int c = cbbStatus.getSelectedIndex() - 1;
+            sq += " and SaleInvoice.Status = " + c;
+        }
+        if (cbbPay.getSelectedIndex() != 0) {
+            sq += " and PayType.PayName like '%" + p.getName() + "%'";
+        }
+        DBInitData.initVehicle(tblOrder, sq, s1s);
+        int row = tblOrder.getRowCount();
+        if (row == 0) {
+            JOptionPane.showMessageDialog(this, Phases.SEARCH_NOT_FOUND, Phases.WARNING_MESSAGE, JOptionPane.WARNING_MESSAGE);
+        }
+    }
+
+    public void SearchReceipt() {
+        Role r = (Role) cbbRole.getSelectedItem();
+        String sql = "SELECT ReceiveInvoice.IDReceive, UserSystem.Fullname, Car.CarName, Supplier.SuppName, "
+                + "CONVERT(Nvarchar, ReceiveInvoice.ReceiveDate, 103) AS [Receive Date], "
+                + "ReceiveInvoice.Quantity, ReceiveInvoice.InputPrice,"
+                + "CASE ReceiveInvoice.Status WHEN 1 THEN 'FINISH' END AS Status "
+                + "FROM UserSystem INNER JOIN Role ON UserSystem.IDRole = Role.IDRole "
+                + "INNER JOIN ReceiveInvoice ON UserSystem.IDUser = ReceiveInvoice.IDUser "
+                + "INNER JOIN Supplier ON ReceiveInvoice.IDSup = Supplier.IDSup "
+                + "INNER JOIN Car ON ReceiveInvoice.IDCar = Car.IDCar "
+                + "WHERE 1 = 1 ";
+        String s1 = sql;
+        if (!txtSupName.getText().equals("")) {
+            sql += " and Supplier.SuppName like '%" + txtSupName.getText().trim() + "%'";
+        }
+        if (!txtCar.getText().equals("")) {
+            sql += " and Car.CarName like '%" + txtCar.getText().trim() + "%'";
+        }
+        if (cbbRole.getSelectedIndex() != 0) {
+            sql += " and Role.IDRole = " + r.getId_vai_tro();
+        }
+        DBInitData.initVehicle(tblReceipt, sql, s1);
+        int row = tblReceipt.getRowCount();
+        if (row == 0) {
+            JOptionPane.showMessageDialog(this, Phases.SEARCH_NOT_FOUND,Phases.WARNING_MESSAGE, JOptionPane.WARNING_MESSAGE);
+        }
+    }
+
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTable1 = new javax.swing.JTable();
+        jPanel1 = new javax.swing.JPanel();
+        jPanel3 = new javax.swing.JPanel();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        tblReceipt = new javax.swing.JTable();
+        lblSupName = new javax.swing.JLabel();
+        txtSupName = new javax.swing.JTextField();
+        lblCar = new javax.swing.JLabel();
+        txtCar = new javax.swing.JTextField();
+        jLabel7 = new javax.swing.JLabel();
+        cbbRole = new javax.swing.JComboBox();
+        btnSearch1 = new javax.swing.JButton();
+        btnReset1 = new javax.swing.JButton();
+        jPanel2 = new javax.swing.JPanel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        tblOrder = new javax.swing.JTable();
+        lblCusName = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        txtCusName = new javax.swing.JTextField();
+        txtCarName = new javax.swing.JTextField();
+        lblStatus = new javax.swing.JLabel();
+        cbbPay = new javax.swing.JComboBox();
+        cbbStatus = new javax.swing.JComboBox();
+        btnReset = new javax.swing.JButton();
+        btnEdit = new javax.swing.JButton();
+        lblStatus1 = new javax.swing.JLabel();
+        btnSearch = new javax.swing.JButton();
+
+        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        jScrollPane1.setViewportView(jTable1);
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("Search Sales");
+
+        jPanel1.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Search Invoice", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Arial", 1, 18), new java.awt.Color(0, 0, 0))); // NOI18N
+
+        jPanel3.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Receipt", javax.swing.border.TitledBorder.LEFT, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Arial", 1, 12), new java.awt.Color(0, 0, 0))); // NOI18N
+
+        tblReceipt.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+
+            }
+        ));
+        jScrollPane3.setViewportView(tblReceipt);
+
+        lblSupName.setText("Supplier Name:");
+
+        lblCar.setText("Vehicle Name:");
+
+        jLabel7.setText("Role:");
+
+        cbbRole.setEditable(true);
+        cbbRole.setModel(new javax.swing.DefaultComboBoxModel(new String[] { " " }));
+
+        btnSearch1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/Spotlight Blue Button.png"))); // NOI18N
+        btnSearch1.setText("Search");
+        btnSearch1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSearch1ActionPerformed(evt);
+            }
+        });
+
+        btnReset1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/Yellow Ball.png"))); // NOI18N
+        btnReset1.setText("Reset");
+        btnReset1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnReset1ActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addGap(24, 24, 24)
+                .addComponent(lblSupName, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(txtSupName, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(lblCar, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(txtCar, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(45, 45, 45)
+                .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(cbbRole, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane3)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(btnSearch1)
+                        .addGap(28, 28, 28)
+                        .addComponent(btnReset1)))
+                .addContainerGap())
+        );
+
+        jPanel3Layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {btnReset1, btnSearch1});
+
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(txtCar, javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(lblCar, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(txtSupName, javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(lblSupName, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel7, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(cbbRole, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 27, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnSearch1)
+                    .addComponent(btnReset1))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        jPanel3Layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {btnReset1, btnSearch1});
+
+        jPanel2.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Sales", javax.swing.border.TitledBorder.LEFT, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Arial", 1, 12), new java.awt.Color(0, 0, 0))); // NOI18N
+
+        tblOrder.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+
+            }
+        ));
+        tblOrder.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
+        jScrollPane2.setViewportView(tblOrder);
+
+        lblCusName.setText("Customer Name:");
+
+        jLabel2.setText("Vehicle Name:");
+
+        lblStatus.setText("Status:");
+
+        cbbPay.setEditable(true);
+
+        cbbStatus.setEditable(true);
+        cbbStatus.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "SELECT STATUS", "NOT FINISH", "FINISH" }));
+
+        btnReset.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/Yellow Ball.png"))); // NOI18N
+        btnReset.setText("Reset");
+        btnReset.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnResetActionPerformed(evt);
+            }
+        });
+
+        btnEdit.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/Write Document.png"))); // NOI18N
+        btnEdit.setText("Edit");
+        btnEdit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEditActionPerformed(evt);
+            }
+        });
+
+        lblStatus1.setText("Status:");
+
+        btnSearch.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/Spotlight Blue Button.png"))); // NOI18N
+        btnSearch.setText("Search");
+        btnSearch.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSearchActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(txtCarName, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addComponent(lblCusName, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(txtCusName, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(40, 40, 40)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(lblStatus, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(lblStatus1, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(cbbPay, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(cbbStatus, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(57, 57, 57)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addComponent(btnSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 0, Short.MAX_VALUE))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                                .addComponent(btnEdit, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addGap(32, 32, 32)
+                        .addComponent(btnReset))
+                    .addComponent(jScrollPane2))
+                .addContainerGap())
+        );
+
+        jPanel2Layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {btnEdit, btnReset, btnSearch});
+
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(cbbPay, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(btnSearch)
+                                .addComponent(btnReset)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnEdit, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(txtCusName)
+                                .addComponent(lblStatus, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(lblCusName, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(txtCarName)
+                                .addComponent(cbbStatus, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(lblStatus1, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(6, 6, 6))
+        );
+
+        jPanel2Layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {btnEdit, btnReset, btnSearch});
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+
+        pack();
+    }// </editor-fold>//GEN-END:initComponents
+
+    private void btnResetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnResetActionPerformed
+        // TODO add your handling code here:
+        ResetOrder();
+    }//GEN-LAST:event_btnResetActionPerformed
+
+    private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchActionPerformed
+        // TODO add your handling code here:
+        SearchOrder();
+    }//GEN-LAST:event_btnSearchActionPerformed
+
+    private void btnSearch1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearch1ActionPerformed
+        // TODO add your handling code here:
+        SearchReceipt();
+    }//GEN-LAST:event_btnSearch1ActionPerformed
+
+    private void btnReset1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReset1ActionPerformed
+        // TODO add your handling code here:
+        ResetReceipt();
+    }//GEN-LAST:event_btnReset1ActionPerformed
+
+    private void btnEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditActionPerformed
+        // TODO add your handling code here:
+        int row1 = tblOrder.getSelectedRow();
+        if (row1 < 0) {
+            JOptionPane.showMessageDialog(this,Phases.ERROR_SELECT_TABLE, Phases.WARNING_MESSAGE, JOptionPane.WARNING_MESSAGE);
+        } else {
+            String status = (String) tblOrder.getValueAt(row1, 9);
+            if (status.equals("FINISH")) {
+                JOptionPane.showMessageDialog(this,Phases.ERROR_EDIT_INVOICE, Phases.WARNING_MESSAGE, JOptionPane.WARNING_MESSAGE);
+            } else {
+                System.out.println(row1);
+                Vector vRow1 = DBInitData.getRow(row1);
+                new EditSale(this, true, vRow1).setVisible(true);
+            }
+        }
+    }//GEN-LAST:event_btnEditActionPerformed
+
+    /**
+     * @param args the command line arguments
+     */
+  
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnEdit;
+    private javax.swing.JButton btnReset;
+    private javax.swing.JButton btnReset1;
+    private javax.swing.JButton btnSearch;
+    private javax.swing.JButton btnSearch1;
+    private javax.swing.JComboBox cbbPay;
+    private javax.swing.JComboBox cbbRole;
+    private javax.swing.JComboBox cbbStatus;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JTable jTable1;
+    private javax.swing.JLabel lblCar;
+    private javax.swing.JLabel lblCusName;
+    private javax.swing.JLabel lblStatus;
+    private javax.swing.JLabel lblStatus1;
+    private javax.swing.JLabel lblSupName;
+    private javax.swing.JTable tblOrder;
+    private javax.swing.JTable tblReceipt;
+    private javax.swing.JTextField txtCar;
+    private javax.swing.JTextField txtCarName;
+    private javax.swing.JTextField txtCusName;
+    private javax.swing.JTextField txtSupName;
+    // End of variables declaration//GEN-END:variables
+}
